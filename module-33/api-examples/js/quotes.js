@@ -9,3 +9,4 @@ const displayQuote = quote => {
     blockQuote.innerText = quote.quote;
 }
 
+ 
