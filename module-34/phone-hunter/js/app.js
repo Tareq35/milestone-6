@@ -1,10 +1,10 @@
-const loadPhones = async (searchText) => {
+const loadPhones = async (searchText, dataLimit) => {
     const url = `https://openapi.programming-hero.com/api/phones?search=${searchText}`;
 
     try {
         const res = await fetch(url);
         const data = await res.json();
-        displayPhones(data.data);
+        displayPhones(data.data, dataLimit);
     }
     catch (error) {
         console.log(error)
@@ -14,19 +14,26 @@ const loadPhones = async (searchText) => {
     }
 }
 
-displayPhones = phones => {
+displayPhones = (phones, dataLimit) => {
     const phonesContainer = document.getElementById('phone-container');
     phonesContainer.innerText = '';
 
-    // display 20 phones only;
-    phones = phones.slice(0, 10);
+    // display 10 phones only;
+    const showAll = document.getElementById('show-all');
+    if (dataLimit && phones.length > 10) {
+        phones = phones.slice(0, 10);
+        showAll.classList.remove('d-none');
+    }
+    else {
+        showAll.classList.add('d-none');
+    }
 
     //display no phone found..
     const noPhone = document.getElementById('no-found-message');
-    if(phones.length === 0){
+    if (phones.length === 0) {
         noPhone.classList.remove('d-none');
     }
-    else{
+    else {
         noPhone.classList.add('d-none')
     }
 
@@ -50,25 +57,33 @@ displayPhones = phones => {
     toggleSpinner(false);
 }
 
-document.getElementById('btn-search').addEventListener('click', function () {
-    // start loader
+const processSearch = (dataLimit) => {
     toggleSpinner(true);
-
     const searchField = document.getElementById('search-field');
     const searchText = searchField.value;
+    loadPhones(searchText, dataLimit);
+    
+}
 
-    loadPhones(searchText);
-    searchField.value = '';
+document.getElementById('btn-search').addEventListener('click', function () {
+    // start loader
+   
+    processSearch(10);
+    
 })
 
-const  toggleSpinner= isLoading => {
-    const loaderSection= document.getElementById('loader');
-    if(isLoading){
+const toggleSpinner = isLoading => {
+    const loaderSection = document.getElementById('loader');
+    if (isLoading) {
         loaderSection.classList.remove('d-none');
     }
-    else{
+    else {
         loaderSection.classList.add('d-none');
     }
 }
+
+document.getElementById('btn-show-all').addEventListener('click', function () {
+    processSearch();
+})
 
 // loadPhones();
